@@ -1,0 +1,52 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+def artifact = "usbserial.jar"
+
+android {
+
+    group = 'com.felhr.usbserial'
+    version = "usb_serial"
+
+    compileSdkVersion 32
+
+    compileOptions {
+        encoding "UTF-8"
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 32
+        archivesBaseName = "UsbApp"
+        consumerProguardFiles 'proguard-rules.pro'
+    }
+
+    //noinspection GroovyAssignabilityCheck
+    task deleteJar(type: Delete) {
+        delete "eclipse_lib/${artifact}"
+    }
+
+    //noinspection GroovyAssignabilityCheck
+    task createJar(type: org.gradle.api.tasks.Copy) {
+        from('build/intermediates/bundles/release/')
+        into('eclipse_lib/')
+        include('classes.jar')
+        rename('classes.jar', artifact)
+    }
+
+    dependencies {
+        implementation 'com.annimon:stream:1.2.1'
+        implementation 'com.squareup.okio:okio:3.1.0'
+
+        androidTestImplementation 'com.android.support.test:runner:1.0.2'
+        androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+        androidTestImplementation 'junit:junit:4.13.2'
+
+        testImplementation 'junit:junit:4.13.2'
+
+    }
+
+    createJar.dependsOn(deleteJar, build)
+}
