@@ -1,29 +1,14 @@
-package com.felhr.usbserial
+package com.usb.usbserial
 
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbDeviceConnection
-import com.felhr.usbserial.UsbSerialInterface
 import android.hardware.usb.UsbEndpoint
-import com.felhr.usbserial.SerialInputStream
-import com.felhr.usbserial.SerialOutputStream
-import com.felhr.usbserial.UsbSerialInterface.UsbReadCallback
-import com.felhr.usbserial.UsbSerialDevice
-import android.annotation.TargetApi
-import com.felhr.usbserial.AbstractWorkerThread
+import com.usb.usbserial.UsbSerialInterface.UsbReadCallback
 import android.hardware.usb.UsbRequest
 import android.hardware.usb.UsbConstants
 import kotlin.jvm.JvmOverloads
-import com.felhr.deviceids.FTDISioIds
-import com.felhr.deviceids.CP210xIds
-import com.felhr.deviceids.PL2303Ids
-import com.felhr.deviceids.CH34xIds
-import com.felhr.usbserial.CDCSerialDevice
-import android.hardware.usb.UsbInterface
 import android.os.Build
 import android.util.Log
-//import com.felhr.usbserial.FTDISerialDevice.Companion.adaptArray
-import okio.Utf8
-import java.lang.IllegalArgumentException
 import java.util.*
 
 abstract class UsbSerialDevice(
@@ -98,6 +83,7 @@ abstract class UsbSerialDevice(
 //    }
 
     override fun read(mCallback: UsbReadCallback?): Int {
+        Log.d("TestingFlow.TAG", "read: reading data start transmission")
         if (!asyncMode) return -1
         if (mr1Version) {
             Log.d(TAG, "read: $mr1Version")
@@ -119,108 +105,62 @@ abstract class UsbSerialDevice(
     // Common Usb Serial Operations (I/O Synchronous)
     abstract override fun syncOpen(): Boolean
     abstract override fun syncClose()
-//    override fun syncWrite(buffer: ByteArray, timeout: Int): Int {
+
+    override fun syncWrite(buffer: ByteArray?, timeout: Int): Int {
 //        return if (!asyncMode) {
-//            if (buffer == null) 0 else connection.bulkTransfer(
+//            if (buffer == null) 0 else connection?.bulkTransfer(
 //                outEndpoint,
 //                buffer,
 //                buffer.size,
 //                timeout
-//            )
+//            )?:0
 //        } else {
 //            -1
 //        }
-//    }
-
-    override fun syncWrite(buffer: ByteArray?, timeout: Int): Int {
-        return if (!asyncMode) {
-            if (buffer == null) 0 else connection?.bulkTransfer(
-                outEndpoint,
-                buffer,
-                buffer.size,
-                timeout
-            )?:0
-        } else {
-            -1
-        }
+        return -1
     }
 
-//    override fun syncRead(buffer: ByteArray, timeout: Int): Int {
+    override fun syncRead(buffer: ByteArray?, timeout: Int): Int {
 //        if (asyncMode) {
 //            return -1
 //        }
-//        return if (buffer == null) 0 else connection.bulkTransfer(
+//        return if (buffer == null) 0 else connection?.bulkTransfer(
 //            inEndpoint,
 //            buffer,
 //            buffer.size,
 //            timeout
-//        )
-//    }
-
-    override fun syncRead(buffer: ByteArray?, timeout: Int): Int {
-        if (asyncMode) {
-            return -1
-        }
-        return if (buffer == null) 0 else connection?.bulkTransfer(
-            inEndpoint,
-            buffer,
-            buffer.size,
-            timeout
-        )?:0
+//        )?:0
+        return 0
     }
 
-//    override fun syncWrite(buffer: ByteArray, offset: Int, length: Int, timeout: Int): Int {
+    override fun syncWrite(buffer: ByteArray?, offset: Int, length: Int, timeout: Int): Int {
 //        return if (!asyncMode) {
-//            if (buffer == null) 0 else connection.bulkTransfer(
+//            if (buffer == null) 0 else connection?.bulkTransfer(
 //                outEndpoint,
 //                buffer,
 //                offset,
 //                length,
 //                timeout
-//            )
+//            )?:0
 //        } else {
 //            -1
 //        }
-//    }
-
-    override fun syncWrite(buffer: ByteArray?, offset: Int, length: Int, timeout: Int): Int {
-        return if (!asyncMode) {
-            if (buffer == null) 0 else connection?.bulkTransfer(
-                outEndpoint,
-                buffer,
-                offset,
-                length,
-                timeout
-            )?:0
-        } else {
-            -1
-        }
+        return -1
     }
 
-//    override fun syncRead(buffer: ByteArray, offset: Int, length: Int, timeout: Int): Int {
+
+    override fun syncRead(buffer: ByteArray?, offset: Int, length: Int, timeout: Int): Int {
 //        if (asyncMode) {
 //            return -1
 //        }
-//        return if (buffer == null) 0 else connection.bulkTransfer(
+//        return if (buffer == null) 0 else connection?.bulkTransfer(
 //            inEndpoint,
 //            buffer,
 //            offset,
 //            length,
 //            timeout
-//        )
-//    }
-
-    override fun syncRead(buffer: ByteArray?, offset: Int, length: Int, timeout: Int): Int {
-        if (asyncMode) {
-            return -1
-        }
-        return if (buffer == null) 0 else connection?.bulkTransfer(
-            inEndpoint,
-            buffer,
-            offset,
-            length,
-            timeout
-        )?:0
+//        )?:0
+        return 0
     }
 
     // Serial port configuration
@@ -275,7 +215,7 @@ abstract class UsbSerialDevice(
     /*
      * WorkerThread waits for request notifications from IN endpoint
      */
-    protected inner class WorkerThread(private val usbSerialDevice: UsbSerialDevice) :
+    protected inner class WorkerThread() :
         AbstractWorkerThread() {
         private var callback: UsbReadCallback? = null
         var usbRequest: UsbRequest? = null
@@ -283,21 +223,9 @@ abstract class UsbSerialDevice(
             val request = connection?.requestWait()
             if (request != null && request.endpoint.type == UsbConstants.USB_ENDPOINT_XFER_BULK && request.endpoint.direction == UsbConstants.USB_DIR_IN) {
                 val data = serialBuffer!!.dataReceived
-                // FTDI devices reserves two first bytes of an IN endpoint with info about
-                // modem and Line.
-//                if (isFTDIDevice()) {
-//                    Log.d(TAG, "doRun FTDI Device: if $data")
-//                    (usbSerialDevice as FTDISerialDevice).ftdiUtilities.checkModemStatus(data) //Check the Modem status
-//                    serialBuffer!!.clearReadBuffer()
-//                    if (data.size > 2) {
-//                        data = adaptArray(data)
-//                        onReceivedData(data)
-//                    }
-//                } else {
                     // Clear buffer, execute the callback
                     serialBuffer!!.clearReadBuffer()
                     onReceivedData(data)
-//                }
                 // Queue a new request
                 usbRequest!!.queue(
                     serialBuffer!!.getReadBuffer(),
@@ -318,11 +246,9 @@ abstract class UsbSerialDevice(
     inner class WriteThread : AbstractWorkerThread() {
         private var outEndpoint: UsbEndpoint? = null
         override fun doRun() {
-            Log.d("RawData.DATA", "doRun: 1 - $serialBuffer")
+            Log.d(TAG, "doRun: 1 - bulkTransfer $serialBuffer")
             val data = serialBuffer!!.getWriteBuffer()
-            Log.d("RawData.DATA", "doRun: 2 - ${String(data)}")
             if (data.isNotEmpty()) connection?.bulkTransfer(outEndpoint, data, data.size, USB_TIMEOUT)
-            Log.d("RawData.DATA", "doRun: 3 -")
         }
 
         fun setUsbEndpoint(outEndpoint: UsbEndpoint?) {
@@ -352,10 +278,6 @@ abstract class UsbSerialDevice(
             workerThread!!.stopThread()
             workerThread = null
         }
-//        else if (!mr1Version && readThread != null) {
-//            readThread!!.stopThread()
-//            readThread = null
-//        }
     }
 
     /*
@@ -363,17 +285,11 @@ abstract class UsbSerialDevice(
      */
     protected fun restartWorkingThread() {
         if (mr1Version && workerThread == null) {
-            workerThread = WorkerThread(this)
+            workerThread = WorkerThread()
             workerThread!!.start()
             while (!workerThread!!.isAlive) {
             } // Busy waiting
         }
-//        else if (!mr1Version && readThread == null) {
-//            readThread = ReadThread(this)
-//            readThread!!.start()
-//            while (!readThread!!.isAlive) {
-//            } // Busy waiting
-//        }
     }
 
     protected fun killWriteThread() {
@@ -423,9 +339,9 @@ abstract class UsbSerialDevice(
             ) else null
         }
 
-        fun isCdcDevice(device: UsbDevice): Boolean {
+        private fun isCdcDevice(device: UsbDevice): Boolean {
             val iIndex = device.interfaceCount
-            for (i in 0..iIndex - 1) {
+            for (i in 0 until iIndex) {
                 val iface = device.getInterface(i)
                 if (iface.interfaceClass == UsbConstants.USB_CLASS_CDC_DATA) return true
             }

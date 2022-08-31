@@ -1,4 +1,4 @@
-package com.felhr.usbserial
+package com.usb.usbserial
 
 import java.io.OutputStream
 import java.lang.IndexOutOfBoundsException

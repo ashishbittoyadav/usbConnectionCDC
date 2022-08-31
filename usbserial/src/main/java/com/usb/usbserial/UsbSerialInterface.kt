@@ -1,12 +1,4 @@
-package com.felhr.usbserial
-
-import com.felhr.usbserial.UsbSerialInterface.UsbReadCallback
-import com.felhr.usbserial.UsbSerialInterface.UsbCTSCallback
-import com.felhr.usbserial.UsbSerialInterface.UsbDSRCallback
-import com.felhr.usbserial.UsbSerialInterface.UsbBreakCallback
-import com.felhr.usbserial.UsbSerialInterface.UsbFrameCallback
-import com.felhr.usbserial.UsbSerialInterface.UsbOverrunCallback
-import com.felhr.usbserial.UsbSerialInterface.UsbParityCallback
+package com.usb.usbserial
 
 /**
  * Interface to handle a serial port

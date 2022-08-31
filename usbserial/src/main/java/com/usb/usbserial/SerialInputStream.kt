@@ -1,11 +1,10 @@
-package com.felhr.usbserial
+package com.usb.usbserial
 
 import java.io.IOException
 import java.io.InputStream
 import java.lang.IndexOutOfBoundsException
-import kotlin.Throws
-import kotlin.experimental.and
 import kotlin.Int
+import kotlin.experimental.and
 
 class SerialInputStream : InputStream {
     private var timeout = 0

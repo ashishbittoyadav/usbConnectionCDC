@@ -1,37 +1,32 @@
-package com.felhr.usbserial
+package com.usb.usbserial
 
 import kotlin.jvm.JvmOverloads
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbDeviceConnection
-import com.felhr.usbserial.UsbSerialDevice
 import android.hardware.usb.UsbInterface
 import android.hardware.usb.UsbEndpoint
-import com.felhr.usbserial.CDCSerialDevice
 import android.hardware.usb.UsbRequest
-import com.felhr.utils.SafeUsbRequest
-import com.felhr.usbserial.SerialInputStream
-import com.felhr.usbserial.SerialOutputStream
-import com.felhr.usbserial.UsbSerialInterface
-import com.felhr.usbserial.UsbSerialInterface.UsbCTSCallback
-import com.felhr.usbserial.UsbSerialInterface.UsbDSRCallback
-import com.felhr.usbserial.UsbSerialInterface.UsbBreakCallback
-import com.felhr.usbserial.UsbSerialInterface.UsbFrameCallback
-import com.felhr.usbserial.UsbSerialInterface.UsbOverrunCallback
-import com.felhr.usbserial.UsbSerialInterface.UsbParityCallback
+import com.usb.utils.SafeUsbRequest
+import com.usb.usbserial.UsbSerialInterface.UsbCTSCallback
+import com.usb.usbserial.UsbSerialInterface.UsbDSRCallback
+import com.usb.usbserial.UsbSerialInterface.UsbBreakCallback
+import com.usb.usbserial.UsbSerialInterface.UsbFrameCallback
+import com.usb.usbserial.UsbSerialInterface.UsbOverrunCallback
+import com.usb.usbserial.UsbSerialInterface.UsbParityCallback
 import android.hardware.usb.UsbConstants
 import android.util.Log
-import com.felhr.usbserial.UsbSerialInterface.Companion.DATA_BITS_5
-import com.felhr.usbserial.UsbSerialInterface.Companion.DATA_BITS_6
-import com.felhr.usbserial.UsbSerialInterface.Companion.DATA_BITS_7
-import com.felhr.usbserial.UsbSerialInterface.Companion.DATA_BITS_8
-import com.felhr.usbserial.UsbSerialInterface.Companion.PARITY_EVEN
-import com.felhr.usbserial.UsbSerialInterface.Companion.PARITY_MARK
-import com.felhr.usbserial.UsbSerialInterface.Companion.PARITY_NONE
-import com.felhr.usbserial.UsbSerialInterface.Companion.PARITY_ODD
-import com.felhr.usbserial.UsbSerialInterface.Companion.PARITY_SPACE
-import com.felhr.usbserial.UsbSerialInterface.Companion.STOP_BITS_1
-import com.felhr.usbserial.UsbSerialInterface.Companion.STOP_BITS_15
-import com.felhr.usbserial.UsbSerialInterface.Companion.STOP_BITS_2
+import com.usb.usbserial.UsbSerialInterface.Companion.DATA_BITS_5
+import com.usb.usbserial.UsbSerialInterface.Companion.DATA_BITS_6
+import com.usb.usbserial.UsbSerialInterface.Companion.DATA_BITS_7
+import com.usb.usbserial.UsbSerialInterface.Companion.DATA_BITS_8
+import com.usb.usbserial.UsbSerialInterface.Companion.PARITY_EVEN
+import com.usb.usbserial.UsbSerialInterface.Companion.PARITY_MARK
+import com.usb.usbserial.UsbSerialInterface.Companion.PARITY_NONE
+import com.usb.usbserial.UsbSerialInterface.Companion.PARITY_ODD
+import com.usb.usbserial.UsbSerialInterface.Companion.PARITY_SPACE
+import com.usb.usbserial.UsbSerialInterface.Companion.STOP_BITS_1
+import com.usb.usbserial.UsbSerialInterface.Companion.STOP_BITS_15
+import com.usb.usbserial.UsbSerialInterface.Companion.STOP_BITS_2
 
 class CDCSerialDevice @JvmOverloads constructor(
     device: UsbDevice,
@@ -142,11 +137,12 @@ class CDCSerialDevice @JvmOverloads constructor(
     }
 
     override fun setDataBits(dataBits: Int) {
+        Log.d("UsbSerialDevice.TAG", "setDataBits: $dataBits $DATA_BITS_8 $DATA_BITS_7 $DATA_BITS_6 $DATA_BITS_5")
         val data = lineCoding
         when (dataBits) {
-            DATA_BITS_5 -> data[6] = 0x05
-            DATA_BITS_6 -> data[6] = 0x06
-            DATA_BITS_7 -> data[6] = 0x07
+//            DATA_BITS_5 -> data[6] = 0x05
+//            DATA_BITS_6 -> data[6] = 0x06
+//            DATA_BITS_7 -> data[6] = 0x07
             DATA_BITS_8 -> data[6] = 0x08
             else -> return
         }
@@ -154,24 +150,26 @@ class CDCSerialDevice @JvmOverloads constructor(
     }
 
     override fun setStopBits(stopBits: Int) {
+        Log.d("UsbSerialDevice.TAG", "setStopBits: $stopBits $STOP_BITS_1 $STOP_BITS_2 $STOP_BITS_15")
         val data = lineCoding
         when (stopBits) {
             STOP_BITS_1 -> data[4] = 0x00
-            STOP_BITS_15 -> data[4] = 0x01
-            STOP_BITS_2 -> data[4] = 0x02
+//            STOP_BITS_15 -> data[4] = 0x01
+//            STOP_BITS_2 -> data[4] = 0x02
             else -> return
         }
         setControlCommand(CDC_SET_LINE_CODING, 0, data)
     }
 
     override fun setParity(parity: Int) {
+        Log.d("UsbSerialDevice.TAG", "setParity: $parity $PARITY_NONE $PARITY_ODD $PARITY_MARK $PARITY_EVEN $PARITY_SPACE")
         val data = lineCoding
         when (parity) {
             PARITY_NONE -> data[5] = 0x00
-            PARITY_ODD -> data[5] = 0x01
-            PARITY_EVEN -> data[5] = 0x02
-            PARITY_MARK -> data[5] = 0x03
-            PARITY_SPACE -> data[5] = 0x04
+//            PARITY_ODD -> data[5] = 0x01
+//            PARITY_EVEN -> data[5] = 0x02
+//            PARITY_MARK -> data[5] = 0x03
+//            PARITY_SPACE -> data[5] = 0x04
             else -> return
         }
         setControlCommand(CDC_SET_LINE_CODING, 0, data)

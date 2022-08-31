@@ -1,7 +1,6 @@
-package com.felhr.utils
+package com.usb.utils
 
 import android.hardware.usb.UsbRequest
-import com.felhr.utils.SafeUsbRequest
 import java.lang.Exception
 import java.lang.RuntimeException
 import java.lang.reflect.Field

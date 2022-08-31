@@ -1,10 +1,9 @@
-package `in`.sunfox.android.spandanEngine.usb_connection
+package com.example.usbapp.usb_connection
 
 import android.util.Log
-import com.example.usbapp.usb_connection.ConstantHelper
-import com.felhr.usbserial.UsbSerialDevice
-import com.felhr.usbserial.UsbSerialInterface
-import com.felhr.usbserial.UsbSerialInterface.UsbReadCallback
+import com.usb.usbserial.UsbSerialDevice
+import com.usb.usbserial.UsbSerialInterface
+import com.usb.usbserial.UsbSerialInterface.UsbReadCallback
 import java.nio.charset.StandardCharsets
 
 

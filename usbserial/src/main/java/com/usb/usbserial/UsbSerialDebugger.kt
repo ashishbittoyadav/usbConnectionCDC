@@ -1,9 +1,7 @@
-package com.felhr.usbserial
+package com.usb.usbserial
 
 import android.util.Log
-import com.felhr.utils.HexData.hexToString
-import com.felhr.usbserial.UsbSerialDebugger
-import com.felhr.utils.HexData
+import com.usb.utils.HexData.hexToString
 
 object UsbSerialDebugger {
     private val CLASS_ID = UsbSerialDebugger::class.java.simpleName

@@ -1,6 +1,7 @@
-package `in`.sunfox.android.spandanEngine.usb_connection
+package com.example.usbapp.usb_connection
 
-import com.example.usbapp.usb_connection.ConstantHelper.Intents.ACTION_USB_PERMISSION
+import `in`.sunfox.android.spandanEngine.usb_connection.SearchDeviceThread
+import `in`.sunfox.android.spandanEngine.usb_connection.UsbConnectionContract
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -8,13 +9,12 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
-import android.os.Build
-import android.os.Handler
-import android.os.Looper
+import android.os.*
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.example.usbapp.usb_connection.ConstantHelper
-import com.felhr.usbserial.UsbSerialDevice
+import com.example.usbapp.usb_connection.ConstantHelper.Intents.ACTION_USB_PERMISSION
+import com.usb.usbserial.UsbSerialDevice
+
 
 object UsbConnectionHelper {
 
@@ -95,7 +95,7 @@ object UsbConnectionHelper {
     }
 
     fun stopTransmission() {
-        if (::serialPort.isInitialized)
+        if (UsbConnectionHelper::serialPort.isInitialized)
             serialPort.write("0".toByteArray())
     }
 
@@ -177,11 +177,14 @@ object UsbConnectionHelper {
                 Intent(ACTION_USB_PERMISSION),
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
             )
-            if (!usbManager.hasPermission(usbDevice))
+            if (!usbManager.hasPermission(usbDevice)) {
+                Log.d(TAG, "setUsbDevice: ${usbManager.hasPermission(usbDevice)}")
+                val manager = (activity as Context).getSystemService(Context.USB_SERVICE)
                 usbManager.requestPermission(
                     usbDevice,
                     permissionIntent
                 )
+            }
         }
     }
 
@@ -202,5 +205,11 @@ object UsbConnectionHelper {
             searchDeviceThread!!.interrupt()
             searchDeviceThread = null
         }
+    }
+}
+
+class Test{
+    fun test(string: String){
+        Log.d("MainActivity.TAG", "test: testing.....$string")
     }
 }

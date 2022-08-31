@@ -1,7 +1,7 @@
 package com.example.usbapp
 
 import `in`.sunfox.android.spandanEngine.usb_connection.UsbConnectionContract
-import `in`.sunfox.android.spandanEngine.usb_connection.UsbConnectionHelper
+import com.example.usbapp.usb_connection.UsbConnectionHelper
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        UsbConnectionHelper.bind(object : UsbConnectionContract{
+        UsbConnectionHelper.bind(object : UsbConnectionContract {
             override fun onDeviceDisconnected() {
                 Log.d(TAG, "onDeviceDisconnected: ")
             }
@@ -55,6 +55,6 @@ class MainActivity : AppCompatActivity() {
                 Log.d(TAG, "onDeviceReconnect: ")
             }
 
-        },this)
+        }, this)
     }
 }

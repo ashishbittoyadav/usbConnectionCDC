@@ -1,4 +1,4 @@
-package com.felhr.utils
+package com.usb.utils
 
 import java.lang.StringBuilder
 import kotlin.experimental.and

@@ -2,6 +2,7 @@ package `in`.sunfox.android.spandanEngine.usb_connection
 
 import android.hardware.usb.UsbManager
 import com.example.usbapp.usb_connection.ConstantHelper
+import com.example.usbapp.usb_connection.UsbConnectionHelper
 
 
 class SearchDeviceThread(private val usbManager: UsbManager) : Thread() {

@@ -1,17 +1,12 @@
-package com.felhr.usbserial
+package com.usb.usbserial
 
 import android.util.Log
-import com.felhr.usbserial.UsbSerialDebugger.printReadLogGet
-import com.felhr.usbserial.UsbSerialDebugger.printLogPut
-import com.felhr.usbserial.UsbSerialDebugger.printLogGet
-import com.felhr.usbserial.SerialBuffer.SynchronizedBuffer
-import com.felhr.usbserial.UsbSerialDebugger
-import kotlin.jvm.Synchronized
-import com.felhr.usbserial.SerialBuffer
+import com.usb.usbserial.UsbSerialDebugger.printReadLogGet
+import com.usb.usbserial.UsbSerialDebugger.printLogPut
+import com.usb.usbserial.UsbSerialDebugger.printLogGet
 import okio.Buffer
 import java.io.EOFException
 import java.nio.ByteBuffer
-import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
